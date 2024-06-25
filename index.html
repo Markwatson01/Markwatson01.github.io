@@ -52,11 +52,14 @@
             background-color: #333;
             color: #fff;
         }
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
+        .profile-container {
+            text-align: center;
             margin: 20px 0;
+        }
+        .profile-pic {
+            width: 200px; /* Increased the width */
+            height: 200px; /* Increased the height */
+            border-radius: 50%;
         }
     </style>
 </head>
@@ -73,7 +76,9 @@
     </header>
     <main class="container">
         <section id="home">
-            <img src="me.jpg" alt="Mark Watson" class="profile-pic">
+            <div class="profile-container">
+                <img src="profile.jpg" alt="Mark Watson" class="profile-pic">
+            </div>
             <h2>Welcome to My Portfolio</h2>
             <p>Explore my projects and see what I’ve been working on.</p>
         </section>
