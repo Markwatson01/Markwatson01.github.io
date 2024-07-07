@@ -61,12 +61,15 @@
             text-align: center;
             margin: 20px 0;
         }
-        .profile-pic {
-            width: auto;
+           .profile-pic {
+            max-width: 100%;
             height: auto;
             border-radius: 50%;
         }
-
+        @media (max-width: 768px) {
+            .profile-pic {
+                max-width: 70%;
+            }
          .code-block {
             background-color: #000;
             color: #0f0;
