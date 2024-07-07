@@ -111,13 +111,183 @@
             </video>
         </section>
         <section id="plots_for_price">
-            <h2>Plots for Price</h2>
-            <p>Plots for Price is a program that allows users to navigate over a plot of land from an image. When they hover over a certain plot, it displays the price of that plot. This project was part of my capstone work.</p>
-            <video controls>
-                <source src="videos/plots_for_price.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
-        </section>
+    <h2>Plots for Price</h2>
+    <p>Plots for Price is a program that allows users to navigate over a plot of land from an image. When they hover over a certain plot, it displays the price of that plot. This project was part of my capstone work.</p>
+    <pre><code>
+import java.util.Scanner;
+import java.awt.*; // classes for building GUI components
+import javax.swing.*; // GUI components for building desktop applications
+import java.awt.event.*; // classes for handling events that occur in GUI components
+import java.io.*; // classes for reading and writing data to files and other sources
+import java.text.DecimalFormat; // classes for formatting and parsing numbers and dates
+import java.util.ArrayList; // used to store the boundaries of the plot, along with their names and prices
+
+public class PlotPriceCalculator extends JFrame implements MouseMotionListener {
+
+    private Image image; // private member variable that holds the loaded image
+    private ArrayList<Boundary> boundaries; // private member variable that holds the boundaries of each plot
+    private JLabel priceLabel; // private member variable that holds the price of the plot
+    private JLabel pricePerSqftLabel; // private member variable that holds price per square feet labels
+    private DecimalFormat df; // df is a DecimalFormat object that formats the price per square feet to two decimal places
+
+    // constructor for the PlotPriceCalculator class that sets up the JFrame with a title, a fixed size, and a border layout
+    public PlotPriceCalculator() {
+        setTitle("Company X Plot Price Calculator");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setSize(630, 640);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        // loads the image of the plots from a file and catches any exception that occurs during the loading process
+        try {
+            image = new ImageIcon("src/image/PlotsByPrice.jpg").getImage();
+        } catch (Exception error) {
+            System.out.println("Can't load the image:  " + error.getMessage());
+            System.exit(1);
+        }
+
+        // creating a new JPanel and overriding the paintComponent method to draw the loaded image on it
+        JPanel imagePanel = new JPanel() {
+            @Override
+            public void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(image, 0, 0, null);
+            }
+        };
+
+        // the panel's preferred size is set to the size of the image, and a MouseMotionListener is added to the panel to listen for mouse movement events
+        imagePanel.setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
+        imagePanel.addMouseMotionListener(this);
+        add(imagePanel, BorderLayout.CENTER);
+
+        // loading the boundaries of each plot from the data file and storing them in an ArrayList of Boundary objects
+        boundaries = new ArrayList<>();
+        df = new DecimalFormat("#.##"); // DecimalFormat object to format the price per square feet
+        try {
+            Scanner input = new Scanner(new File("src/data/CompanyX.dat"));
+            while (input.hasNext()) {
+                String name = input.nextLine();
+                String[] c = input.nextLine().split("\\s+");
+                int[][] points = new int[c.length / 2][2];
+                for (int i = 0; i < c.length; i += 2) {
+                    points[i / 2][0] = Integer.parseInt(c[i]);
+                    points[i / 2][1] = Integer.parseInt(c[i + 1]);
+                }
+                double price = Double.parseDouble(input.nextLine());
+                boundaries.add(new Boundary(name, points, price));
+            }
+            input.close();
+        } catch (Exception error) {
+            System.out.println("Can't load data file: " + error.getMessage());
+            System.exit(1);
+        }
+
+        // add a panel to show the price and price per square feet of the plot
+        JPanel infoPanel = new JPanel(new GridLayout(2, 2));
+        infoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        JLabel priceTextLabel = new JLabel("Price: ");
+        priceLabel = new JLabel();
+        JLabel pricePerSqftTextLabel = new JLabel("Price per sqft: ");
+        pricePerSqftLabel = new JLabel();
+        infoPanel.add(priceTextLabel);
+        infoPanel.add(priceLabel);
+        infoPanel.add(pricePerSqftTextLabel);
+        infoPanel.add(pricePerSqftLabel);
+        add(infoPanel, BorderLayout.SOUTH);
+    }
+
+    public static void main(String[] args) {
+        // making the PlotPriceCalculator visible
+        new PlotPriceCalculator().setVisible(true);
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        // variables to keep track of whether the mouse is inside a boundary and which boundary is selected
+        boolean insideBoundary = false;
+        Boundary selectedBoundary = null;
+        // loop through all boundaries to check if the mouse is inside one of them
+        for (Boundary boundary : boundaries) {
+            if (boundary.contains(e.getX(), e.getY())) {
+                insideBoundary = true;
+                selectedBoundary = boundary;
+                break;
+            }
+        }
+        // if the mouse is inside a boundary, update the price and pricePerSqft labels with the corresponding values
+        if (insideBoundary) {
+            priceLabel.setText("$" + selectedBoundary.getPrice());
+            double area = selectedBoundary.getArea();
+            double pricePerSqft = selectedBoundary.getPrice() / area;
+            pricePerSqftLabel.setText("$" + df.format(pricePerSqft) + " per sqft");
+        } else {
+            // if the mouse is not inside a boundary, clear the price and pricePerSqft labels
+            priceLabel.setText("");
+            pricePerSqftLabel.setText("");
+        }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        // required to use MouseMotionListener
+    }
+}
+
+class Boundary {
+    private String name;
+    private int[][] points;
+    private double price;
+
+    public Boundary(String name, int[][] points, double price) {
+        // constructor
+        this.name = name;
+        this.points = points;
+        this.price = price;
+    }
+
+    public String getName() {
+        // getter method
+        return name;
+    }
+
+    public int[][] getPoints() {
+        // getter method
+        return points;
+    }
+
+    // getter method
+    public double getPrice() {
+        return price;
+    }
+
+    // calculate the area of the boundary using the shoelace formula
+    public double getArea() {
+        double area = 0.0;
+        int j = points.length - 1;
+        for (int i = 0; i < points.length; i++) {
+            area += (points[j][0] + points[i][0]) * (points[j][1] - points[i][1]);
+            j = i;
+        }
+        return Math.abs(area / 2.0);
+    }
+
+    // check if a point (x, y) is inside the boundary using the ray casting algorithm
+    public boolean contains(int x, int y) {
+        int i;
+        int j;
+        boolean result = false;
+        for (i = 0, j = points.length - 1; i < points.length; j = i++) {
+            if ((points[i][1] > y) != (points[j][1] > y) &&
+                    (x < (points[j][0] - points[i][0]) * (y - points[i][1]) / (points[j][1] - points[i][1]) + points[i][0])) {
+                result = !result;
+            }
+        }
+        return result;
+    }
+}
+    </code></pre>
+</section>
         <section id="daily_calorie_tracker">
             <h2>Daily Calorie Tracker</h2>
             <p>This Python project helps users track their daily calorie intake. It provides a menu with options to add or remove calories, restart the day, end the day, and exit the program. The program also stores the total calories for each day in a file.</p>
