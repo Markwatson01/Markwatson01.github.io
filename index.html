@@ -306,6 +306,91 @@ class Boundary {
         <section id="daily_calorie_tracker">
             <h2>Daily Calorie Tracker</h2>
             <p>This Python project helps users track their daily calorie intake. It provides a menu with options to add or remove calories, restart the day, end the day, and exit the program. The program also stores the total calories for each day in a file.</p>
+           <div class="code-block">
+            <code>
+                
+calories = []  # list to store the calories
+
+
+# function to add calories to the list
+def addCalories():
+    try:
+        calories.append(int(input("Enter the number of calories: ")))
+    except ValueError: # if the user enters anything other than a number
+        print("Invalid input")
+
+
+# function to remove calories from the list
+def removeCalories():
+    try:
+        calories.remove(int(input("Enter the number of calories: ")))
+    except ValueError: # if the user enters anything other than a number in the calories list
+        print("Calories not found in list.")
+
+
+# function to restart the day by clearing the calories list
+def restartDay():
+    calories.clear()
+    print("Calories list cleared.")
+
+
+# function to end the day by calculating and storing the total calories to a file
+def endDay(day):
+    totalCalories = sum(calories)
+    print("Total calories for day", day, ":", totalCalories)
+    storeFile(day, totalCalories)
+    calories.clear()  # clearing the calories list after storing the calories in the file
+
+
+# function to store the total calories to a file
+def storeFile(day, totalCalories):
+    try:
+        with open("calories.txt", "a") as f:  # using "with" statement to automatically close the file
+            f.write("Day " + str(day) + ": " + str(totalCalories) + "\n")  # writing the total calories to the file
+            print("Calories written to file.")
+    except FileNotFoundError:
+        print("File not found.")
+    except Exception as e:
+        print("Error occurred while writing to file:", str(e))
+
+
+# function to display the menu
+def menu():
+    print("-----------------------------------")
+    print("1. Add calories for the day.")
+    print("2. Remove calories for the day.")
+    print("3. Restart the day.")
+    print("4. End the day.")
+    print("5. Exit.")
+    print("-----------------------------------")
+
+
+# main function to run the program
+def main():
+    day = 1  # start with day 1
+    while True:
+        menu()  # displaying the menu
+        choice = input("Enter your choice: ")  # getting user input for choice
+
+        if choice == "1":
+            addCalories()  # calling addCalories function if choice is 1
+        elif choice == "2":
+            removeCalories()  # calling removeCalories function if choice is 2
+        elif choice == "3":
+            restartDay()  # calling restartDay function if choice is 3
+        elif choice == "4":
+            endDay(day)  # calling endDay function if choice is 4
+            day += 1  # increment day
+        elif choice == "5":
+            break  # breaking the loop and exiting the program
+        else:
+            print("Invalid choice.")
+
+
+if __name__ == "__main__": # ensure that the code inside the block is only executed when the script is run directly
+    main()
+
+            </code> </div>
             <video controls width="300" height="auto">
                 <source src="Demo3.mp4" type="video/mp4">
                 Your browser does not support the video tag.
