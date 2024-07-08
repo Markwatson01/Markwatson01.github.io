@@ -62,11 +62,9 @@
             margin: 20px 0;
         }
         .profile-pic {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
             display: block;
-            margin: 0 auto; /* Centers the image */
+    margin: 0 auto;
+    max-width: 100%; /* Ensures image doesn't overflow container */
         }
 
         .code-block {
@@ -83,11 +81,11 @@
             font-family: Consolas, monospace;
         }
 
-        @media only screen and (max-width: 600px) {
-            .profile-pic {
-                width: 100px;
-                height: 100px;
-            }
+      @media only screen and (max-width: 600px) {
+    .profile-pic {
+        width: 100px;
+        height: 100px;
+    }
         }
 
     </style>
