@@ -46,7 +46,7 @@
         .project p {
             line-height: 1.6;
         }
-        .project video {
+        .project video, .project img {
             width: 100%;
             height: auto;
             margin-top: 20px;
@@ -62,9 +62,12 @@
             margin: 20px 0;
         }
         .profile-pic {
-            display: block;
+       display: block;
     margin: 0 auto;
-    max-width: 100%; /* Ensures image doesn't overflow container */
+    width: 150px; /* Set a fixed width for larger screens */
+    height: 150px; /* Set a fixed height for larger screens */
+    border-radius: 50%; /* Make the image oval */
+    object-fit: cover; /* Ensure the image covers the container while maintaining aspect ratio */
         }
 
         .code-block {
@@ -83,8 +86,8 @@
 
       @media only screen and (max-width: 600px) {
     .profile-pic {
-        width: 100px;
-        height: 100px;
+        width: 80%; /* Ensure the image fills the container on smaller screens */
+        height: auto;
     }
         }
 
