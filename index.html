@@ -134,6 +134,9 @@ Explore my projects and see what I’ve been working on:</p>
             <div class="project">
                 <h2><a href="#retailsales_management_system">Retail Sales Management System</a></h2>
             </div>
+            <div class="project">
+                <h2><a href="#useraccount_management_system">Retail Sales Management System</a></h2>
+            </div>
         </section>
         <section id="warehouse_inventory_management_system">
             <h2>Warehouse Inventory Management System</h2>
@@ -427,6 +430,339 @@ if __name__ == "__main__": # ensure that the code inside the block is only execu
                 <source src="Demo4.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
+        </section>
+                        <section id="useraccount_management_system">
+            <h2>Retail Sales Management System</h2>
+            <p>This C++ project is a user account management system that allows for creating, logging in, changing passwords, and deleting accounts. The program begins by asking the user how many accounts to create and enforces specific password requirements. Users can then log into their accounts, change passwords, and delete accounts using a menu-driven interface. The system ensures security by verifying usernames and passwords and provides appropriate messages for incorrect login attempts.</p>
+            <code>
+/******************************************************************************
+Basic Template for our C++ Programs.
+*******************************************************************************/
+#include <stdio.h>      /* printf, scanf, puts, NULL */
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
+#include <string>       // String managment funtions.
+#include <iostream>     // For input and output
+#include <cmath>        // For math functions.
+#include <math.h>
+#include <cstdlib>
+#include <map>
+
+using namespace std;
+
+class User {
+protected:
+    string username; 
+    string password;
+public:
+    User() {
+        username = "";
+        password = "";
+    }
+
+    User(string u, string p) {
+        username = u;
+        password = p;
+    }
+
+    string getUsername() {
+        return username;
+    }
+
+    string getPassword() {
+        return password;
+    }
+
+    void setUsername(string u) {
+        username = u;
+    }
+
+    void setPassword(string p) {
+        password = p;
+    }
+
+    void input() {
+        cout << "==================================" << endl;
+        cout << "Enter username: ";
+        cin >> username;
+        cout << "Enter password: ";
+        cin >> password;
+        cout << "==================================" << endl;
+    }
+
+    void output() {
+
+        cout << "Username: " << username << endl;
+        cout << "Password: " << password << endl;
+        cout << "==================================" << endl;
+    }
+};
+
+
+
+class Database {
+protected:
+
+public:
+    map <string, User> database; //creating a map called database that uses string 
+    Database() {
+        database.clear(); //clears the map
+    }
+
+    void input() {
+        int n;
+        cout << "Enter number of users: ";
+        cin >> n;
+        for (int i = 0; i < n; i++) { //for loop that runs the number of n
+            User u; //creates an object for User 
+            u.input(); //uses the object for user to open up the input method
+            database[u.getUsername()] = u; 
+        }
+    }
+
+    void output() {
+        for (auto it = database.begin(); it != database.end(); it++) { 
+            it->second.output();
+            cout << endl;
+        }
+    }
+
+    bool checkUser(string u) {
+        if (database.find(u) == database.end()) {
+            return false;
+        }
+        return true;
+    }
+
+    bool checkLogin(string u, string p) {
+        if (database.find(u) == database.end()) {
+            return false;
+        }
+        if (database[u].getPassword() != p) {
+            return false;
+        }
+        return true;
+    }
+};
+
+class Password {
+protected:
+    int length;
+    int upper;
+    int lower;
+    int numeric;
+    int special;
+public:
+    Password() {
+        length = 0;
+        upper = 0;
+        lower = 0;
+        numeric = 0;
+        special = 0;
+    }
+
+    void input() {
+        length = 6;
+        upper = 1;
+        lower = 1;
+        numeric = 1;
+        special = 1;
+    }
+
+    void output() {
+        cout << "Minimum password length: " << length << endl;
+        cout << "Minimum number of upper case letters: " << upper << endl;
+        cout << "Minimum number of lower case letters: " << lower << endl;
+        cout << "Minimum number of numeric characters: " << numeric << endl;
+        cout << "Minimum number of special characters: " << special << endl;
+    }
+
+    bool checkPassword(string p) {
+        int len = 0;
+        int up = 0;
+        int low = 0;
+        int num = 0;
+        int spe = 0;
+        for (int i = 0; i < p.length(); i++) {
+            if (('A' <= p[i] && p[i] <= 'Z') || ('a' <= p[i] && p[i] <= 'z')) {
+                len++;
+                if ('A' <= p[i] && p[i] <= 'Z') {
+                    up++;
+                }
+                if ('a' <= p[i] && p[i] <= 'z') {
+                    low++;
+                }
+            }
+            else if ('0' <= p[i] && p[i] <= '9') {
+                len++;
+                num++;
+            }
+            else {
+                len++;
+                spe++;
+            }
+        }
+        if (len < length) { //if it is not long enough
+            return false;
+        }
+        if (up < upper) { //if no upper case
+            return false;
+        }
+        if (low < lower) { //if no lowercase
+            return false;
+        }
+        if (num < numeric) { //if no numeric
+            return false;
+        }
+        if (spe < special) { //if no special character
+            return false;
+        }
+        return true;
+    }
+};
+
+class Login {
+protected:
+    int attempts;
+    Database d;
+    Password password;
+public:
+    Login() {
+        attempts = 0;
+    }
+
+    void input() {
+        d.input(); //using the database class object to call the input method
+        password.input(); //using the password class object to call the input method
+    }
+
+    void output() {
+        d.output();
+        password.output();
+    }
+
+    void run() {
+        int choice;
+        while (true) {
+            cout << "==================================" << endl;
+            cout << "MAIN MENU:" << endl;
+            cout << "1) Create Password." << endl;
+            cout << "2) Login." << endl;
+            cout << "3) Delete account." << endl;
+            cout << "4) Change Password." << endl;
+            cout << "5) Exit." << endl;
+            cout << "==================================" << endl;
+            cout << "Enter your choice: ";
+            cin >> choice;
+            if (choice == 1) {
+                createPassword(); //calling the create password method
+            }
+            else if (choice == 2) {
+                login(); //calling the login method
+            }
+            else if (choice == 3) {
+                cout << "Please enter the username for the account you will like to delete" << endl;
+                string user2;
+                cin >> user2;
+                d.database.erase(user2); //this deletes whatever username is entered from the map
+                cout << "Account with username " << user2 << " was deleted from the database" << endl;
+            }
+            else if (choice == 4) {
+                changePassword(); //calling the change password method
+            }
+            else if (choice == 5) {
+                return;
+            }
+            else {
+                cout << "Invalid choice!" << endl;
+            }
+        }
+    }
+
+    void createPassword() {
+        string u, p;
+        cout << "Enter username: ";
+        cin >> u;
+        if (d.checkUser(u)) { //if the username is found
+            cout << "Username already exists!" << endl;
+            return;
+        }
+        while (true) {
+            cout << "Enter password: ";
+            cin >> p;
+            if (!password.checkPassword(p)) { //if the password is not found
+                cout << "Invalid password!" << endl;
+            }
+            else {
+                break;
+            }
+        }
+        User user(u, p);
+        d.database[u] = user;
+
+    }
+
+
+    void changePassword() {
+        string u, p;
+        cout << "Enter username to change its password: ";
+        cin >> u;
+        if (!d.checkUser(u)) { //if the username is not found
+            cout << "Username doesn't exist!" << endl;
+            return;
+        }
+        while (true) {
+            cout << "Enter password: ";
+            cin >> p;
+            if (!password.checkPassword(p)) { //if the password is not found 
+                cout << "Invalid password!" << endl;
+            }
+            else {
+                break;
+            }
+        }
+        User user(u, p);
+        d.database[u] = user;
+
+    }
+
+    void login() {
+        string u, p;
+        while (true) {
+            cout << "Enter username: ";
+            cin >> u;
+            if (!d.checkUser(u)) { //if the username is not found 
+                cout << "Username does not exist!" << endl;
+                return;
+            }
+            cout << "Enter password: ";
+            cin >> p;
+            if (!d.checkLogin(u, p)) { //if password is not found
+                cout << "Wrong password!" << endl;
+                attempts++;
+                if (attempts == 3) {
+                    cout << "You are logged out!" << endl; //will log out after 3 attempts
+                    return;
+                }
+            }
+            else {
+                cout << "Welcome!" << endl;
+                return;
+            }
+        }
+    }
+};
+
+int main() {
+    Login login;
+    login.input(); //calling input method using the Login object
+    login.output(); //calling output method using the Login object
+    login.run();   //calling run method using the Login object
+    return 0;
+} </code>
+                    <div class="project">
+      <img src="account.jpg" alt="Plots for Price">
+  </div>
         </section>
         <section id="contact">
             <h2>Contact</h2>
